@@ -1,5 +1,4 @@
 import {
-  PreTrainedTokenizer,
   ImageProcessor,
   MobileViTFeatureExtractor,
   MobileViTForImageClassification,
@@ -25,8 +24,6 @@ export class ImageClassificationModel extends BaseModel {
   private processor: ImageProcessor | undefined;
   private model: PreTrainedModel | undefined;
   private generator: ImageClassificationPipeline | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
-  private isLoaded = false;
 
   constructor(modelName: TypeModelName) {
     super();
@@ -128,7 +125,6 @@ export class ImageClassificationModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         );
-        this.isLoaded = true;
         break;
       }
       case "Auto": {
@@ -145,7 +141,6 @@ export class ImageClassificationModel extends BaseModel {
         this.processor = await AutoImageProcessor.from_pretrained(
           modelConfig.name
         );
-        this.isLoaded = true;
         break;
       }
       case "MobileViT": {
@@ -162,7 +157,6 @@ export class ImageClassificationModel extends BaseModel {
         this.processor = await MobileViTFeatureExtractor.from_pretrained(
           modelConfig.name
         );
-        this.isLoaded = true;
         break;
       }
     }

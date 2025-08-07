@@ -24,7 +24,6 @@ export class ImageTextToTextModel extends BaseModel {
   private processor: Processor | undefined;
   private model: PreTrainedModel | undefined;
   private tokenizer: PreTrainedTokenizer | undefined;
-  private isLoaded = false;
 
   constructor(modelName: TypeModelName) {
     super();
@@ -131,6 +130,7 @@ export class ImageTextToTextModel extends BaseModel {
             do_sample: false,
           })) as number[][];
           const decoded = this.processor.batch_decode(
+            //@ts-expect-error null is fine
             outputs.slice(null, [inputs.input_ids.dims.at(-1), null]),
             { skip_special_tokens: true }
           );
@@ -163,6 +163,7 @@ export class ImageTextToTextModel extends BaseModel {
                     <option value="<REGION_PROPOSAL>">Region Proposal</option> 
           */
           const task = `<CAPTION_TO_PHRASE_GROUNDING>${question}`;
+         //@ts-expect-error construct_prompts exists
           const prompts = this.processor.construct_prompts(task);
           const image = await RawImage.read(imageBase64);
           const inputs = await this.processor(image, prompts);
@@ -174,6 +175,7 @@ export class ImageTextToTextModel extends BaseModel {
           const generated_text = this.processor.batch_decode(generated_ids, {
             skip_special_tokens: false,
           })[0];
+          //@ts-expect-error post_process_generation exists
           const result = this.processor.post_process_generation(
             generated_text,
             task,
@@ -204,7 +206,6 @@ export class ImageTextToTextModel extends BaseModel {
           }
         );
         this.tokenizer = this.processor.tokenizer;
-        this.isLoaded = true;
         break;
       }
       case "Florence2": {
@@ -220,7 +221,6 @@ export class ImageTextToTextModel extends BaseModel {
           }
         );
         this.tokenizer = this.processor.tokenizer;
-        this.isLoaded = true;
         break;
       }
       case "Auto": {
@@ -236,7 +236,6 @@ export class ImageTextToTextModel extends BaseModel {
           }
         );
         this.tokenizer = this.processor.tokenizer;
-        this.isLoaded = true;
         break;
       }
     }

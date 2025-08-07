@@ -23,7 +23,6 @@ export class AudioTextToTextModel extends BaseModel {
   private generator: UltravoxProcessor | undefined;
   private model: PreTrainedModel | undefined;
   private tokenizer: PreTrainedTokenizer | undefined;
-  private isLoaded = false;
 
   constructor(modelName: TypeModelName) {
     super();
@@ -165,7 +164,6 @@ export class AudioTextToTextModel extends BaseModel {
           subfolder: modelConfig.subfolder,
         });
         this.tokenizer = this.generator.tokenizer;
-        this.isLoaded = true;
         break;
       }
       case "Voxtral": {
@@ -183,7 +181,6 @@ export class AudioTextToTextModel extends BaseModel {
           }
         );
         this.tokenizer = this.generator.tokenizer;
-        this.isLoaded = true;
         break;
       }
     }

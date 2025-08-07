@@ -1,9 +1,7 @@
 import "highlight.js/styles/github.css";
-// import "llmini.js/themes/basic.css";
-// import { ObjectDetectionComponent } from "llmini.js/categories/object-detection";
 
-import "../lib/themes/basic.css";
-import { AudioTextToTextComponent } from "../lib/categories/audio-text-to-text";
+import { AudioTextToTextComponent } from "llmini.js/categories/audio-text-to-text";
+import "llmini.js/themes/basic.css";
 
 function App() {
   return (

@@ -1,0 +1,1 @@
+import{j as i,g as l}from"./index-CgtMJ4yd.js";const p=({children:e,align:t="center",direction:n="row",gap:r=void 0,justify:s="center",wrap:a=!1,...o})=>i.jsx("div",{className:"ui-flex",style:{flexDirection:n,alignItems:t,justifyContent:s,gap:r,flexWrap:a?"wrap":"nowrap",...l(o)},children:e});p.displayName="UiFlex";export{p as default};

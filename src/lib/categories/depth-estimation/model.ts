@@ -1,5 +1,4 @@
 import {
-  PreTrainedTokenizer,
   Processor,
   AutoModelForDepthEstimation,
   AutoProcessor,
@@ -23,8 +22,6 @@ export class DepthEstimationModel extends BaseModel {
   private processor: Processor | undefined;
   private model: PreTrainedModel | undefined;
   private generator: DepthEstimationPipeline | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
-  private isLoaded = false;
 
   constructor(modelName: TypeModelName) {
     super();
@@ -129,7 +126,6 @@ export class DepthEstimationModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         );
-        this.isLoaded = true;
         break;
       }
       case "Auto": {
@@ -144,7 +140,6 @@ export class DepthEstimationModel extends BaseModel {
           }
         );
         this.processor = await AutoProcessor.from_pretrained(modelConfig.name);
-        this.isLoaded = true;
         break;
       }
     }

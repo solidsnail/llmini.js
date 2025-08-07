@@ -1,6 +1,5 @@
 import {
   pipeline,
-  PreTrainedTokenizer,
   RawAudio,
   TextToAudioPipeline,
   type PreTrainedModel,
@@ -25,8 +24,6 @@ export class TextToSpeechModel extends BaseModel {
   private modelName: TypeModelName;
   private generator: KokoroTTS | TextToAudioPipeline | undefined;
   private model: PreTrainedModel | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
-  private isLoaded = false;
 
   constructor(modelName: TypeModelName) {
     super();
@@ -133,9 +130,7 @@ export class TextToSpeechModel extends BaseModel {
           device: (device || modelConfig.device) as "webgpu",
           progress_callback: this.onProgressChange,
         })) as KokoroTTS;
-        this.tokenizer = this.generator.tokenizer;
         this.model = this.generator.model;
-        this.isLoaded = true;
         break;
       }
       case "Outetts": {
@@ -162,7 +157,6 @@ export class TextToSpeechModel extends BaseModel {
         // this.generator.print_default_speakers();
         //@ts-expect-error No dts yer for outetts
         this.model = this.generator.model.model;
-        this.isLoaded = true;
         break;
       }
       case "default-type": {
@@ -177,9 +171,7 @@ export class TextToSpeechModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         )) as TextToAudioPipeline;
-        this.tokenizer = this.generator.tokenizer;
         this.model = this.generator.model;
-        this.isLoaded = true;
         break;
       }
     }

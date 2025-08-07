@@ -1,7 +1,4 @@
 import {
-  PreTrainedTokenizer,
-  ImageProcessor,
-  type PreTrainedModel,
   type ProgressInfo,
   pipeline,
   ObjectDetectionPipeline,
@@ -18,11 +15,7 @@ import type { TypeDevice } from "../../types";
 
 export class ObjectDetectionModel extends BaseModel {
   private modelName: TypeModelName;
-  private processor: ImageProcessor | undefined;
-  private model: PreTrainedModel | undefined;
   private generator: ObjectDetectionPipeline | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
-  private isLoaded = false;
 
   constructor(modelName: TypeModelName) {
     super();
@@ -92,7 +85,6 @@ export class ObjectDetectionModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         );
-        this.isLoaded = true;
         break;
       }
     }

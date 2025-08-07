@@ -47,8 +47,6 @@ export const getComponentStyle = ({
   ta,
   fz,
   fw,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ...other
 }: TypeCommonProps & Record<string, unknown>): CSSProperties => {
   return {
     flex,

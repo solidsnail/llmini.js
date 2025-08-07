@@ -1,9 +1,7 @@
 import {
   pipeline,
-  PreTrainedTokenizer,
   DocumentQuestionAnsweringPipeline,
   type DocumentQuestionAnsweringOutput,
-  type PreTrainedModel,
   type ProgressInfo,
 } from "@huggingface/transformers";
 // import { env } from "@huggingface/transformers";
@@ -17,9 +15,6 @@ import type { TypeDevice } from "../../types";
 export class DocumentQuestionAnsweringModel extends BaseModel {
   private modelName: TypeModelName;
   private generator: DocumentQuestionAnsweringPipeline | undefined;
-  private model: PreTrainedModel | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
-  private isLoaded = false;
 
   constructor(modelName: TypeModelName) {
     super();
@@ -72,9 +67,6 @@ export class DocumentQuestionAnsweringModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         )) as DocumentQuestionAnsweringPipeline;
-        this.tokenizer = this.generator.tokenizer;
-        this.model = this.generator.model;
-        this.isLoaded = true;
         break;
       }
     }
