@@ -1,6 +1,6 @@
 {
-  "name": "llmini.js",
-  "private": true,
+  "name": "llmini-website",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
   "scripts": {

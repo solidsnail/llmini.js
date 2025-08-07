@@ -10,6 +10,8 @@ const main = async () => {
         {
           name: "llmini.js",
           type: "module",
+          private: false,
+          version: "0.1.0",
           dependencies: {
             "@huggingface/transformers": "^3.7.1",
             "kokoro-js": "^1.2.1",
