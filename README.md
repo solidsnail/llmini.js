@@ -1,6 +1,7 @@
 <p align="center"><img src="./public/logo.png" width="300" /></p>
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/solidsnail/llmini.js)
+![Discord](https://img.shields.io/discord/1403156120293347428)
 
 
 # llmini.js
@@ -669,3 +670,21 @@ const imageTextToTextSDK = new VisualQuestionAnsweringSDK("Janus-Pro-1B-ONNX", t
 await imageTextToTextSDK.load();
 await imageTextToTextSDK.analyzeImage("What is this", myImageB64);
 ```
+
+## Contributing
+
+1. Fork the repository
+2. Cr eate your feature branch (git checkout -b feature/amazing-feature)
+3. Commit your changes (git commit -m 'Add amazing feature')
+4. Push to the branch (git push origin feature/amazing-feature)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built on Hugging Face Transformers.js
+- Powered by ONNX Runtime Web
+- Thanks to the open-source AI/ML community - Special thanks to [Xenova](https://github.com/xenova) for his awesome work 
