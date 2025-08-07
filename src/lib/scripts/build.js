@@ -1,5 +1,6 @@
 import { exec } from "child_process";
 import fs from "fs/promises";
+import packageJson from "../../../package.json"
 
 const main = async () => {
   const tsc = exec("tsc --p tsconfig.lib.json --outDir ./dist");
@@ -11,7 +12,7 @@ const main = async () => {
           name: "llmini.js",
           type: "module",
           private: false,
-          version: "0.1.0",
+          version: packageJson.version,
           dependencies: {
             "@huggingface/transformers": "^3.7.1",
             "kokoro-js": "^1.2.1",
