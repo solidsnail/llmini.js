@@ -1,0 +1,1 @@
+import{j as a,g as u}from"./index-VUGAKz4e.js";const d=({variant:l="filled",options:t,disabled:s,value:n,onChange:r,...i})=>a.jsx("select",{disabled:s,"data-variant":l,value:n,onChange:e=>r(e.target.value),className:"ui-select",style:u(i),children:t.map(e=>a.jsx("option",{value:e.value,children:e.label},e.value))});d.displayName="UiSelect";export{d as default};
