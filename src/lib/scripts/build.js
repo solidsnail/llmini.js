@@ -1,10 +1,11 @@
 import { exec } from "child_process";
 import fs from "fs/promises";
-import packageJson from "../../../package.json"
 
 const main = async () => {
   const tsc = exec("tsc --p tsconfig.lib.json --outDir ./dist");
   tsc.on("close", async () => {
+    const packageJsonStr = await fs.readFile("package.json", "utf-8")
+    const packageJson = JSON.parse(packageJsonStr)
     await fs.writeFile(
       "dist/package.json",
       JSON.stringify(
