@@ -1,7 +1,7 @@
 <p align="center"><img src="./public/logo.png" width="300" /></p>
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/solidsnail/llmini.js)
-![Discord](https://img.shields.io/discord/1403156120293347428)
+
+<a target="_blank" href="https://discord.gg/SxTp53NQ"><img src="https://dcbadge.limes.pink/api/server/SxTp53NQ" alt="" /></a>
 
 
 # llmini.js
