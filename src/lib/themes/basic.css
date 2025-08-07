@@ -1,0 +1,277 @@
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+:root {
+  --colors-a: #ffffff;
+  --colors-b: #efedec;
+  --colors-c: #e6e4e0;
+  --colors-d: #6c88b0;
+  --colors-e: #3a6090;
+  --colors-f: #08395f;
+  --colors-g: #e91b1b13;
+  --colors-h: #ffffff13;
+  --gap: 5px;
+  --disabled-opacity: 0.5;
+  --padding: 5px;
+  --radius: 15px;
+  --fontsize: 15px;
+  --progress-height: 8px;
+  --progress-bg: var(--colors-f);
+  --font-family: "Geist", sans-serif;
+  --font-family-mono: "Fira Code", monospace;
+}
+
+.hljs {
+  position: relative;
+  border-radius: 10px;
+  font-family: var(--font-family-mono);
+}
+.hljs-copy-button {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  aspect-ratio: 1 / 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  background: var(--colors-bg);
+}
+.hljs-copy-button:hover {
+  filter: opacity(var(--disabled-opacity));
+}
+.hljs-copy-button:active {
+  filter: opacity(1) brightness(0.8);
+}
+
+.ui-error {
+  background: var(--colors-g);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  z-index: 20;
+  padding: 0px 40px;
+  border-radius: inherit;
+  display: flex;
+  font-weight: 400;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  white-space: pre-wrap;
+  font-family: var(--font-family);
+}
+
+.ui-progress {
+  background: var(--colors-h);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  z-index: 20;
+  border-radius: inherit;
+  display: flex;
+  flex-flow: column;
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  white-space: pre-wrap;
+  font-family: var(--font-family);
+}
+.ui-progress > progress {
+  background: var(--progress-bg);
+  height: var(--progress-height);
+  border-radius: var(--radius);
+}
+.ui-progress > progress::-webkit-progress-value {
+  background: var(--progress-bg);
+}
+.ui-progress > progress::-moz-progress-bar {
+  background: var(--progress-bg);
+}
+.ui-progress > span {
+  font-size: 12px;
+}
+.ui-button {
+  display: flex;
+  align-items: center;
+  border: none;
+  user-select: none;
+  font-size: var(--fontsize);
+  gap: var(--gap);
+  border-radius: var(--radius);
+  padding: var(--padding) calc(var(--padding) * 2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: none;
+}
+.ui-button > svg {
+  flex: none;
+}
+.ui-button[data-variant="filled"] {
+  background: var(--colors-f);
+  color: var(--colors-a);
+}
+.ui-button[data-variant="outlined"] {
+  border: 1px solid var(--colors-f);
+  background: none;
+  color: var(--colors-f);
+}
+.ui-button:disabled {
+  pointer-events: none;
+  background: var(--colors-c);
+  color: var(--colors-e);
+  filter: opacity(var(--disabled-opacity));
+}
+.ui-button:hover {
+  background: var(--colors-c);
+  color: var(--colors-f);
+  cursor: pointer;
+}
+.ui-button:active {
+  background: var(--colors-d);
+  cursor: pointer;
+}
+
+.ui-button[aria-checked][aria-disabled="true"] {
+  pointer-events: none;
+  background: var(--colors-c);
+  color: var(--colors-e);
+  filter: opacity(var(--disabled-opacity));
+  border-color: var(--colors-e);
+}
+.ui-button[aria-checked]:active {
+  background: var(--colors-d);
+}
+.ui-button[aria-checked="false"] {
+}
+.ui-button[aria-checked="true"] {
+  background: var(--colors-c);
+}
+
+.ui-input {
+  display: flex;
+  align-items: center;
+  border: none;
+  user-select: none;
+  font-size: var(--fontsize);
+  gap: var(--gap);
+  outline: 1px solid var(--colors-c);
+  padding: var(--padding) calc(var(--padding) * 2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: none;
+  font-family: var(--font-family);
+}
+.ui-input:focus {
+  outline: 2px solid var(--colors-d);
+}
+.ui-input > svg {
+  flex: none;
+}
+.ui-input[data-variant="filled"] {
+  background: var(--colors-a);
+  color: var(--colors-f);
+}
+.ui-input[data-variant="outlined"] {
+  border: 1px solid var(--colors-f);
+  background: none;
+  color: var(--colors-f);
+}
+.ui-input[aria-disabled="true"] {
+  pointer-events: none;
+  background: var(--colors-c);
+  color: var(--colors-e);
+  filter: opacity(var(--disabled-opacity));
+  border-color: var(--colors-e);
+}
+.ui-input[data-type="file"]:hover {
+  background: var(--colors-c);
+  color: var(--colors-f);
+  cursor: pointer;
+}
+.ui-input[data-type="file"]:active {
+  background: var(--colors-d);
+  cursor: pointer;
+}
+.ui-input[data-type="file"][aria-checked="true"] {
+  background: var(--colors-c);
+}
+textarea.ui-input {
+  resize: none;
+}
+
+.ui-flex {
+  display: flex;
+}
+
+.ui-messages {
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+  overflow: auto;
+  padding-right: 10px;
+}
+
+.ui-message {
+  font-family: var(--font-family);
+}
+.ui-message[data-role="user"] {
+  align-self: flex-end;
+  background: var(--colors-c);
+  padding: 0px 20px;
+  border-radius: var(--radius);
+}
+.ui-message[data-role="assistant"] {
+  align-self: flex-start;
+  padding: 0px 10px;
+}
+
+.ui-text {
+  font-family: var(--font-family);
+}
+
+.ui-form {
+  background-color: var(--colors-b);
+  display: flex;
+  flex-flow: column;
+  position: relative;
+  border-radius: 20px;
+  padding: 10px;
+  gap: 10px;
+  width: var(--width);
+  height: var(--height);
+  font-family: Arial, Helvetica, sans-serif;
+  box-shadow: 0 0 0 10px var(--colors-a), 0 0 0 11px var(--colors-b);
+}
+.ui-form * {
+  box-sizing: border-box;
+}
+
+.ui-spinner {
+  display: inline-flex;
+}
+
+.ui-select {
+  padding: 5px 10px 5px 5px;
+  background: var(--colors-f);
+  color: var(--colors-a);
+  border-radius: var(--radius);
+}
+.ui-select:hover {
+  background: var(--colors-c);
+  color: var(--colors-f);
+  cursor: pointer;
+}
+.ui-select:disabled {
+  pointer-events: none;
+  background: var(--colors-c);
+  color: var(--colors-e);
+  filter: opacity(var(--disabled-opacity));
+  border-color: var(--colors-e);
+}
