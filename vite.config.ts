@@ -1,15 +1,28 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { resolve } from "path";
+import { writeFileSync } from "fs";
 
-// https://vite.dev/config/
+const outDir = "docs";
+function noJekyllPlugin() {
+  return {
+    name: "vite-plugin-nojekyll",
+    closeBundle() {
+      const filePath = resolve(outDir, ".nojekyll");
+      writeFileSync(filePath, "");
+      console.log("✅ .nojekyll added to build output");
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), noJekyllPlugin()],
   base: "https://solidsnail.github.io/llmini.js/",
   optimizeDeps: {
     include: ["kokoro-js"],
   },
   build: {
-    outDir: "docs",
+    outDir,
     rollupOptions: {
       external: [],
     },
