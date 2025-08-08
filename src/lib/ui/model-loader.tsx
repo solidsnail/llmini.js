@@ -1,19 +1,26 @@
 import type { FC, PropsWithChildren } from "react";
 import { RefreshCcw } from "lucide-react";
-import { type ProgressInfo } from "@huggingface/transformers";
 
 import { UI } from ".";
 import { ICON_SIZE } from "../constants";
+import type { TypeProgress } from "../types";
 
 const INFINITE_MODELS = ["ultravox-v0_5-llama-3_2-1b-ONNX", "OuteTTS-0.2-500M"];
 
 type Props = PropsWithChildren<{
   loadModel: () => void;
   loaded: boolean;
+  disabled?: boolean;
   error: string;
-  progressInfo: ProgressInfo | undefined;
+  progressInfo: TypeProgress | undefined;
 }>;
-const Component: FC<Props> = ({ loadModel, loaded, error, progressInfo }) => {
+const Component: FC<Props> = ({
+  loadModel,
+  disabled,
+  loaded,
+  error,
+  progressInfo,
+}) => {
   return (
     <>
       {!error && progressInfo && progressInfo.status !== "ready" && (
@@ -25,8 +32,9 @@ const Component: FC<Props> = ({ loadModel, loaded, error, progressInfo }) => {
       {!loaded && (
         <UI.Button
           icon={<RefreshCcw size={ICON_SIZE} />}
+          disabled={disabled}
           onClick={loadModel}
-          text="Load model"
+          text={disabled ? "Loading..." : "Load model"}
         />
       )}
     </>

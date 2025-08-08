@@ -1,10 +1,9 @@
-import type { ProgressInfo } from "@huggingface/transformers";
 import { AudioTextToTextModel } from "./model";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 import type { TypeModelName } from "./config";
 
 type Callbacks = {
-  onProgressChange?: (info: ProgressInfo) => void;
+  onProgressChange?: (info: TypeProgress) => void;
   onResult?: (result: string) => void;
   onError?: (error: string) => void;
   onDone?: () => void;

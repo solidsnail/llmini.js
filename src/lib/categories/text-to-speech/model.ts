@@ -3,7 +3,6 @@ import {
   RawAudio,
   TextToAudioPipeline,
   type PreTrainedModel,
-  type ProgressInfo,
 } from "@huggingface/transformers";
 import { WaveFile } from "wavefile";
 // import { env } from "@huggingface/transformers";
@@ -15,7 +14,7 @@ import {
   type TypeKokoroVoice,
   type TypeOutettsVoice,
 } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 import type { KokoroTTS } from "kokoro-js";
 
 // env.backends.onnx.logLevel = "verbose";
@@ -30,7 +29,7 @@ export class TextToSpeechModel extends BaseModel {
     this.modelName = modelName;
   }
 
-  onProgressChange = (progressInfo: ProgressInfo) => {
+  onProgressChange = (progressInfo: TypeProgress) => {
     self.postMessage({
       event: "onProgressChange",
       payload: {

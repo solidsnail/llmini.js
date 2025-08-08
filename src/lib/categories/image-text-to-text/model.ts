@@ -7,7 +7,6 @@ import {
   AutoModelForImageTextToText,
   type Message,
   type PreTrainedModel,
-  type ProgressInfo,
   RawImage,
   Tensor,
 } from "@huggingface/transformers";
@@ -15,7 +14,7 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
@@ -30,7 +29,7 @@ export class ImageTextToTextModel extends BaseModel {
     this.modelName = modelName;
   }
 
-  onProgressChange = (progressInfo: ProgressInfo) => {
+  onProgressChange = (progressInfo: TypeProgress) => {
     self.postMessage({
       event: "onProgressChange",
       payload: {
@@ -94,7 +93,7 @@ export class ImageTextToTextModel extends BaseModel {
           });
           const outputs = (await this.model.generate({
             ...inputs,
-            generation_config: { max_new_tokens: 40 },
+            generation_config: { max_new_tokens: 400 },
           })) as Tensor[];
           const response = this.processor.decode(
             outputs[0].slice(inputs.input_ids.length),
@@ -103,7 +102,6 @@ export class ImageTextToTextModel extends BaseModel {
               clean_up_tokenization_spaces: true,
             }
           );
-          console.log({ outputs, response });
           const assistantResponse =
             response.split("Assistant:")[1]?.trim() || response;
           this.onResult(assistantResponse);
@@ -126,7 +124,7 @@ export class ImageTextToTextModel extends BaseModel {
           });
           const outputs = (await this.model.generate({
             ...inputs,
-            generation_config: { max_new_tokens: 40 },
+            generation_config: { max_new_tokens: 400 },
             do_sample: false,
           })) as number[][];
           const decoded = this.processor.batch_decode(
@@ -163,7 +161,7 @@ export class ImageTextToTextModel extends BaseModel {
                     <option value="<REGION_PROPOSAL>">Region Proposal</option> 
           */
           const task = `<CAPTION_TO_PHRASE_GROUNDING>${question}`;
-         //@ts-expect-error construct_prompts exists
+          //@ts-expect-error construct_prompts exists
           const prompts = this.processor.construct_prompts(task);
           const image = await RawImage.read(imageBase64);
           const inputs = await this.processor(image, prompts);
@@ -260,7 +258,7 @@ self.addEventListener("message", async (e) => {
         if (!model) {
           throw new Error("No model found");
         }
-        await model.ask(payload.imageBase64, payload.question);
+        await model.ask(payload.question, payload.imageBase64);
         break;
     }
   } catch (error) {

@@ -1,3 +1,5 @@
+import { type ProgressInfo } from "@huggingface/transformers";
+
 export type TypeDTypeSingle =
   | "auto"
   | "fp32"
@@ -58,3 +60,4 @@ export type TypeConfig<N extends string, P extends string> = Record<
     subfolder: string;
   }
 >;
+export type TypeProgress = ProgressInfo;

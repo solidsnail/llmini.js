@@ -1,5 +1,4 @@
-import type { ProgressInfo } from "@huggingface/transformers";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 import type { TypeModelName } from "./config";
 import { ChatModel, type TypeMessage } from "./model";
 
@@ -12,9 +11,9 @@ type ChatSettings = {
 };
 
 type ChatCallbacks = {
-  onProgressChange?: (info: ProgressInfo) => void;
+  onProgressChange?: (info: TypeProgress) => void;
   onMessagesChange?: (messages: TypeMessage[]) => void;
-  onDone?: () => void;
+  onResult?: (lastMessage: TypeMessage) => void;
   onError?: (error: string) => void;
   onReady?: (isSystemRoleSupported: boolean) => void;
 };
@@ -65,49 +64,52 @@ export default class SDK {
 
   async load() {
     if (this.withWorker) {
-      this.worker = new Worker(new URL("./model.js", import.meta.url), {
-        type: "module",
-      });
+      return new Promise((resolve) => {
+        this.worker = new Worker(new URL("./model.js", import.meta.url), {
+          type: "module",
+        });
 
-      this.worker.addEventListener("message", (e: MessageEvent) => {
-        const { event, payload } = e.data;
-        switch (event) {
-          case "onProgressChange":
-            this.callbacks.onProgressChange?.(payload.progress);
-            break;
-          case "onMessagesChange":
-            this.callbacks.onMessagesChange?.(payload.messages);
-            break;
-          case "onLoad":
-            this.isSystemRoleSupported = payload.isSystemRoleSupported;
-            this.callbacks.onReady?.(this.isSystemRoleSupported);
-            this.callbacks.onProgressChange?.({
-              status: "ready",
-              model: this.modelName,
-              task: "",
-            });
-            this.resetMessages();
-            break;
-          case "onDone":
-            this.callbacks.onDone?.();
-            break;
-          case "onError":
-            this.callbacks.onError?.(payload.error);
-            break;
-        }
-      });
+        this.worker.addEventListener("message", (e: MessageEvent) => {
+          const { event, payload } = e.data;
+          switch (event) {
+            case "onProgressChange":
+              this.callbacks.onProgressChange?.(payload.progress);
+              break;
+            case "onMessagesChange":
+              this.callbacks.onMessagesChange?.(payload.messages);
+              break;
+            case "onLoad":
+              this.isSystemRoleSupported = payload.isSystemRoleSupported;
+              this.callbacks.onReady?.(this.isSystemRoleSupported);
+              this.callbacks.onProgressChange?.({
+                status: "ready",
+                model: this.modelName,
+                task: "",
+              });
+              this.resetMessages();
+              resolve(undefined);
+              break;
+            case "onResult":
+              this.callbacks.onResult?.(payload);
+              break;
+            case "onError":
+              this.callbacks.onError?.(payload.error);
+              break;
+          }
+        });
 
-      this.worker.addEventListener("error", (e: ErrorEvent) => {
-        console.error("Worker error", e);
-        this.callbacks.onError?.(e.message);
-      });
+        this.worker.addEventListener("error", (e: ErrorEvent) => {
+          console.error("Worker error", e);
+          this.callbacks.onError?.(e.message);
+        });
 
-      this.worker.postMessage({
-        event: "load",
-        payload: {
-          modelName: this.modelName,
-          device: this.device,
-        },
+        this.worker.postMessage({
+          event: "load",
+          payload: {
+            modelName: this.modelName,
+            device: this.device,
+          },
+        });
       });
     } else {
       try {
@@ -118,8 +120,8 @@ export default class SDK {
         if (this.callbacks.onMessagesChange) {
           this.model.onMessagesChange = this.callbacks.onMessagesChange;
         }
-        if (this.callbacks.onDone) {
-          this.model.onDone = this.callbacks.onDone;
+        if (this.callbacks.onResult) {
+          this.model.onResult = this.callbacks.onResult;
         }
         await this.model.load(this.device);
         this.isSystemRoleSupported = this.model.isSystemRoleSupported();
@@ -171,7 +173,9 @@ export default class SDK {
    */
   async sendMessage({
     prompt,
-    settings = {},
+    settings = {
+      maxTokens: 400,
+    },
     attachedImg,
     isImageGen,
   }: {
@@ -188,7 +192,6 @@ export default class SDK {
       content,
       ...(attachedImg ? { images: [attachedImg] } : {}),
     };
-
     if (this.withWorker && this.worker) {
       this.worker.postMessage({
         event: "addMessage",

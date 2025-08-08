@@ -111,7 +111,7 @@ export const ChatComponent: FC<Props> = ({
         onMessagesChange(messages) {
           setMessages(messages);
         },
-        onDone() {
+        onResult() {
           setBusy(false);
           setIsImageGen(false);
         },

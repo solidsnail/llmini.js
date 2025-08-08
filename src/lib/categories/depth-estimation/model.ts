@@ -4,7 +4,6 @@ import {
   AutoProcessor,
   RawImage,
   type PreTrainedModel,
-  type ProgressInfo,
   type DepthEstimationPipelineOutput,
   pipeline,
   DepthEstimationPipeline,
@@ -13,7 +12,7 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
@@ -28,7 +27,7 @@ export class DepthEstimationModel extends BaseModel {
     this.modelName = modelName;
   }
 
-  onProgressChange = (progressInfo: ProgressInfo) => {
+  onProgressChange = (progressInfo: TypeProgress) => {
     self.postMessage({
       event: "onProgressChange",
       payload: {

@@ -6,7 +6,6 @@ import {
   VoxtralProcessor,
   VoxtralForConditionalGeneration,
   type PreTrainedModel,
-  type ProgressInfo,
   type Message,
 } from "@huggingface/transformers";
 import * as wavefile from "wavefile";
@@ -14,7 +13,7 @@ import * as wavefile from "wavefile";
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
@@ -29,7 +28,7 @@ export class AudioTextToTextModel extends BaseModel {
     this.modelName = modelName;
   }
 
-  onProgressChange = (progressInfo: ProgressInfo) => {
+  onProgressChange = (progressInfo: TypeProgress) => {
     self.postMessage({
       event: "onProgressChange",
       payload: {

@@ -1,16 +1,15 @@
-import type { ProgressInfo } from "@huggingface/transformers";
 import { TextToSpeechModel } from "./model";
 import type {
   TypeKokoroVoice,
   TypeOutettsVoice,
   TypeModelName,
 } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 
 type TypeVoice = TypeKokoroVoice | TypeOutettsVoice;
 
 type TTSCallbacks = {
-  onProgressChange?: (info: ProgressInfo) => void;
+  onProgressChange?: (info: TypeProgress) => void;
   onResult?: (audioBase64: string) => void;
   onError?: (error: string) => void;
   onDone?: () => void;
@@ -39,45 +38,48 @@ export default class SDK {
 
   async load() {
     if (this.withWorker) {
-      this.worker = new Worker(new URL("./model.js", import.meta.url), {
-        type: "module",
-      });
+      return new Promise((resolve) => {
+        this.worker = new Worker(new URL("./model.js", import.meta.url), {
+          type: "module",
+        });
 
-      this.worker.addEventListener("message", (e: MessageEvent) => {
-        const { event, payload } = e.data;
-        switch (event) {
-          case "onProgressChange":
-            this.callbacks.onProgressChange?.(payload.progress);
-            break;
-          case "onResult":
-            this.callbacks.onResult?.(payload.result);
-            this.callbacks.onDone?.();
-            break;
-          case "onLoad":
-            this.callbacks.onProgressChange?.({
-              status: "ready",
-              model: this.modelName,
-              task: "",
-            });
-            this.callbacks.onReady?.();
-            break;
-          case "onDone":
-            this.callbacks.onDone?.();
-            break;
-          case "onError":
-            this.callbacks.onError?.(payload.error);
-            break;
-        }
-      });
+        this.worker.addEventListener("message", (e: MessageEvent) => {
+          const { event, payload } = e.data;
+          switch (event) {
+            case "onProgressChange":
+              this.callbacks.onProgressChange?.(payload.progress);
+              break;
+            case "onResult":
+              this.callbacks.onResult?.(payload.result);
+              this.callbacks.onDone?.();
+              break;
+            case "onLoad":
+              this.callbacks.onProgressChange?.({
+                status: "ready",
+                model: this.modelName,
+                task: "",
+              });
+              this.callbacks.onReady?.();
+              resolve(undefined);
+              break;
+            case "onDone":
+              this.callbacks.onDone?.();
+              break;
+            case "onError":
+              this.callbacks.onError?.(payload.error);
+              break;
+          }
+        });
 
-      this.worker.addEventListener("error", (e: ErrorEvent) => {
-        console.error("Worker error", e);
-        this.callbacks.onError?.(e.message);
-      });
+        this.worker.addEventListener("error", (e: ErrorEvent) => {
+          console.error("Worker error", e);
+          this.callbacks.onError?.(e.message);
+        });
 
-      this.worker.postMessage({
-        event: "load",
-        payload: { modelName: this.modelName },
+        this.worker.postMessage({
+          event: "load",
+          payload: { modelName: this.modelName },
+        });
       });
     } else {
       try {
@@ -120,6 +122,10 @@ export default class SDK {
     } else {
       throw new Error("SDK not loaded");
     }
+  }
+
+  async warmUp() {
+    this.speak("", "af_alloy", 1.3);
   }
 
   destroy() {

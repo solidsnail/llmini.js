@@ -54,7 +54,7 @@ export const VisualQuestionAnsweringComponent: FC<Props> = ({
         setError(err);
         setBusy(false);
       },
-      onDone() {
+      onResult() {
         setBusy(false);
       },
     });

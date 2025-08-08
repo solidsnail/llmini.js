@@ -1,13 +1,13 @@
-import type { ProgressInfo } from "@huggingface/transformers";
 import type { TypeModelName } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 import type { TypeMessage } from "../chat/model";
 import { ChatSDK } from "../chat";
+import { EMPTY_BASE64_IMG } from "../../constants";
 
 type VQACallbacks = {
-  onProgressChange?: (progress: ProgressInfo) => void;
+  onProgressChange?: (progress: TypeProgress) => void;
   onMessagesChange?: (messages: TypeMessage[]) => void;
-  onDone?: () => void;
+  onResult?: (message: TypeMessage) => void;
   onError?: (error: string) => void;
   onReady?: () => void;
 };
@@ -35,6 +35,13 @@ export default class SDK extends ChatSDK {
     this.sendMessage({
       prompt,
       attachedImg: base64Image,
+    });
+  }
+
+  async warmUp() {
+    this.sendMessage({
+      prompt: "",
+      attachedImg: EMPTY_BASE64_IMG,
     });
   }
 }

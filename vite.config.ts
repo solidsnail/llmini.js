@@ -4,6 +4,8 @@ import { resolve } from "path";
 import { writeFileSync } from "fs";
 
 const outDir = "docs";
+const isDev = process.env.NODE_ENV === "development";
+
 function noJekyllPlugin() {
   return {
     name: "vite-plugin-nojekyll",
@@ -17,7 +19,7 @@ function noJekyllPlugin() {
 
 export default defineConfig({
   plugins: [react(), noJekyllPlugin()],
-  base: "https://solidsnail.github.io/llmini.js/",
+  base: isDev ? undefined : "https://solidsnail.github.io/llmini.js/",
   optimizeDeps: {
     include: ["kokoro-js"],
   },

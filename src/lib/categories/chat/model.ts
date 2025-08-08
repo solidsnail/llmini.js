@@ -12,7 +12,6 @@ import {
   type PreTrainedModel,
   type Chat,
   type Message,
-  type ProgressInfo,
   type TextGenerationSingle,
 } from "@huggingface/transformers";
 
@@ -21,7 +20,7 @@ import {
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
 import { ProgressStreamer } from "../../classes/progress-streamer";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
@@ -99,13 +98,14 @@ export class ChatModel extends BaseModel {
     });
   };
 
-  onDone = () => {
+  onResult = (lastReply: TypeMessage) => {
     self.postMessage({
-      event: "onDone",
+      event: "onResult",
+      payload: lastReply,
     });
   };
 
-  onProgressChange = (progressInfo: ProgressInfo) => {
+  onProgressChange = (progressInfo: TypeProgress) => {
     self.postMessage({
       event: "onProgressChange",
       payload: {
@@ -137,26 +137,29 @@ export class ChatModel extends BaseModel {
     this.isProcessingQueue = false;
   }
 
-  prompt = async (
-    args: {
-      maxTokens?: number;
-      progressCallback?: TypePromptProgressCallback;
-      chat_template?: "text_to_image" | undefined;
-      characterTimeout?: number;
-      do_sample?: boolean;
-      temperature?: number;
-      top_k?: number;
-      top_p?: number;
-    } = {
+  prompt = async (promptArgs: {
+    maxTokens?: number;
+    progressCallback?: TypePromptProgressCallback;
+    chat_template?: "text_to_image" | undefined;
+    characterTimeout?: number;
+    do_sample?: boolean;
+    temperature?: number;
+    top_k?: number;
+    top_p?: number;
+  }) => {
+    if (!this.isLoaded) throw new Error("Model not loaded");
+    if (!this.tokenizer) throw new Error("No tokenizer");
+    const defaultArgs = {
       maxTokens: 512 * 2,
       do_sample: false,
       temperature: 1,
       top_k: 50,
       top_p: 1,
-    }
-  ) => {
-    if (!this.isLoaded) throw new Error("Model not loaded");
-    if (!this.tokenizer) throw new Error("No tokenizer");
+    };
+    const args = {
+      ...defaultArgs,
+      ...(promptArgs || {}),
+    };
     const placeholderIndex = this._messages.length;
     this.addMessage({ role: "assistant", content: "" });
     // Reset character queue for new prompt
@@ -242,6 +245,7 @@ export class ChatModel extends BaseModel {
             content,
           };
           this.setMessage(placeholderIndex, lastReply);
+          this.onResult(lastReply);
         }
 
         break;
@@ -266,13 +270,13 @@ export class ChatModel extends BaseModel {
             .generated_text as Chat;
           const lastReply = (chat as TypeMessage[]).pop()!;
           this.setMessage(placeholderIndex, lastReply);
+          this.onResult(lastReply);
         } else {
           throw new Error("No generator");
         }
         break;
       }
     }
-    this.onDone();
   };
 
   load = async (device?: TypeDevice) => {

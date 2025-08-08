@@ -1,10 +1,9 @@
-import type { ProgressInfo } from "@huggingface/transformers";
 import type { TypeModelName } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 import { DocumentQuestionAnsweringModel } from "./model";
 
 type VQACallbacks = {
-  onProgressChange?: (progress: ProgressInfo) => void;
+  onProgressChange?: (progress: TypeProgress) => void;
   onResult?: (result: string) => void;
   onError?: (error: string) => void;
   onReady?: () => void;
@@ -32,41 +31,44 @@ export default class SDK {
 
   async load() {
     if (this.withWorker) {
-      this.worker = new Worker(new URL("./model.js", import.meta.url), {
-        type: "module",
-      });
+      return new Promise((resolve) => {
+        this.worker = new Worker(new URL("./model.js", import.meta.url), {
+          type: "module",
+        });
 
-      this.worker.addEventListener("message", (e: MessageEvent) => {
-        const { event, payload } = e.data;
-        switch (event) {
-          case "onProgressChange":
-            this.callbacks.onProgressChange?.(payload.progress);
-            break;
-          case "onResult":
-            this.callbacks.onResult?.(payload.result);
-            break;
-          case "onLoad":
-            this.callbacks.onProgressChange?.({
-              status: "ready",
-              model: this.modelName,
-              task: "",
-            });
-            this.callbacks.onReady?.();
-            break;
-          case "onError":
-            this.callbacks.onError?.(payload.error);
-            break;
-        }
-      });
+        this.worker.addEventListener("message", (e: MessageEvent) => {
+          const { event, payload } = e.data;
+          switch (event) {
+            case "onProgressChange":
+              this.callbacks.onProgressChange?.(payload.progress);
+              break;
+            case "onResult":
+              this.callbacks.onResult?.(payload.result);
+              break;
+            case "onLoad":
+              this.callbacks.onProgressChange?.({
+                status: "ready",
+                model: this.modelName,
+                task: "",
+              });
+              this.callbacks.onReady?.();
+              resolve(undefined);
+              break;
+            case "onError":
+              this.callbacks.onError?.(payload.error);
+              break;
+          }
+        });
 
-      this.worker.addEventListener("error", (e: ErrorEvent) => {
-        console.error("Worker error", e);
-        this.callbacks.onError?.(e.message);
-      });
+        this.worker.addEventListener("error", (e: ErrorEvent) => {
+          console.error("Worker error", e);
+          this.callbacks.onError?.(e.message);
+        });
 
-      this.worker.postMessage({
-        event: "load",
-        payload: { modelName: this.modelName, device: this.device },
+        this.worker.postMessage({
+          event: "load",
+          payload: { modelName: this.modelName, device: this.device },
+        });
       });
     } else {
       try {

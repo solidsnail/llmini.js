@@ -87,7 +87,6 @@ export const TextToSpeechComponent: FC<Props> = ({
       h={height}
       wrap
     >
-      {" "}
       <UI.Text tagName="b" text={modelName} p="0px 10px" w="100%" />
       {error && <div className="ui-error">{error}</div>}
       <UI.ModelLoader

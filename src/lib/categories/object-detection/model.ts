@@ -1,5 +1,4 @@
 import {
-  type ProgressInfo,
   pipeline,
   ObjectDetectionPipeline,
   RawImage,
@@ -9,7 +8,7 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
@@ -22,7 +21,7 @@ export class ObjectDetectionModel extends BaseModel {
     this.modelName = modelName;
   }
 
-  onProgressChange = (progressInfo: ProgressInfo) => {
+  onProgressChange = (progressInfo: TypeProgress) => {
     self.postMessage({
       event: "onProgressChange",
       payload: {
@@ -61,7 +60,6 @@ export class ObjectDetectionModel extends BaseModel {
           const output = (await this.generator(
             image
           )) as ObjectDetectionPipelineOutput;
-          console.log({ output });
           this.onResult(output);
           break;
         }

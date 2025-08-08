@@ -2,13 +2,12 @@ import {
   pipeline,
   DocumentQuestionAnsweringPipeline,
   type DocumentQuestionAnsweringOutput,
-  type ProgressInfo,
 } from "@huggingface/transformers";
 // import { env } from "@huggingface/transformers";
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice } from "../../types";
+import type { TypeDevice, TypeProgress } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
@@ -21,7 +20,7 @@ export class DocumentQuestionAnsweringModel extends BaseModel {
     this.modelName = modelName;
   }
 
-  onProgressChange = (progressInfo: ProgressInfo) => {
+  onProgressChange = (progressInfo: TypeProgress) => {
     self.postMessage({
       event: "onProgressChange",
       payload: {

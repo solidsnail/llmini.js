@@ -13,6 +13,7 @@ export const UI = {
   Audio: lazy(() => import("./audio")),
   ModelLoader: lazy(() => import("./model-loader")),
   Logo: lazy(() => import("./logo")),
+  ImageCanvas: lazy(() => import("./image-canvas")),
 };
 export type TypeCommonProps = {
   bg?: CSSProperties["background"];

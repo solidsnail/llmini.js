@@ -1,9 +1,9 @@
 import type { FC } from "react";
-import { type ProgressInfo } from "@huggingface/transformers";
 import { getComponentStyle, UI, type TypeCommonProps } from ".";
+import type { TypeProgress } from "../types";
 
 type Props = {
-  progressInfo: ProgressInfo;
+  progressInfo: TypeProgress;
   isInfinite?: boolean;
 } & TypeCommonProps;
 const Component: FC<Props> = ({
