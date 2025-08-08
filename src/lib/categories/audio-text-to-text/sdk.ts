@@ -32,38 +32,40 @@ export default class SDK {
 
   async load() {
     if (this.withWorker) {
-      this.worker = new Worker(new URL("./model.js", import.meta.url), {
-        type: "module",
-      });
+      return new Promise((resolve) => {
+        this.worker = new Worker(new URL("./model.js", import.meta.url), {
+          type: "module",
+        });
+        this.worker.addEventListener("message", (e: MessageEvent) => {
+          const { event, payload } = e.data;
+          switch (event) {
+            case "onProgressChange":
+              this.callbacks.onProgressChange?.(payload.progress);
+              break;
+            case "onResult":
+              this.callbacks.onResult?.(payload.result);
+              break;
+            case "onLoad":
+              this.callbacks.onProgressChange?.({
+                status: "ready",
+                model: this.modelName,
+                task: "",
+              });
+              resolve(undefined);
+              break;
+            case "onError":
+              this.callbacks.onError?.(payload.error);
+              break;
+            case "onDone":
+              this.callbacks.onDone?.();
+              break;
+          }
+        });
 
-      this.worker.addEventListener("message", (e: MessageEvent) => {
-        const { event, payload } = e.data;
-        switch (event) {
-          case "onProgressChange":
-            this.callbacks.onProgressChange?.(payload.progress);
-            break;
-          case "onResult":
-            this.callbacks.onResult?.(payload.result);
-            break;
-          case "onLoad":
-            this.callbacks.onProgressChange?.({
-              status: "ready",
-              model: this.modelName,
-              task: "",
-            });
-            return Promise.resolve();
-          case "onError":
-            this.callbacks.onError?.(payload.error);
-            break;
-          case "onDone":
-            this.callbacks.onDone?.();
-            break;
-        }
-      });
-
-      this.worker.postMessage({
-        event: "load",
-        payload: { modelName: this.modelName },
+        this.worker.postMessage({
+          event: "load",
+          payload: { modelName: this.modelName },
+        });
       });
     } else {
       this.model = new AudioTextToTextModel(this.modelName);
