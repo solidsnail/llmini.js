@@ -5,8 +5,14 @@ import react from "@vitejs/plugin-react-swc";
 export default defineConfig({
   plugins: [react()],
   base: "https://solidsnail.github.io/llmini.js/",
+  optimizeDeps: {
+    include: ["kokoro-js"],
+  },
   build: {
     outDir: "docs",
+    rollupOptions: {
+      external: [],
+    },
   },
   worker: {
     format: "es",
