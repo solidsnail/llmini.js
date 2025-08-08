@@ -1,7 +1,7 @@
 {
   "name": "llmini-website",
   "private": false,
-  "version": "0.2.4",
+  "version": "0.2.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,7 @@
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "llmini.js": "0.2.4"
+    "llmini.js": "0.2.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

@@ -25,13 +25,6 @@ const main = async () => {
             "highlight.js": "^11.11.1",
             dompurify: "^3.2.6",
           },
-          files: [
-            "categories",
-            "themes",
-            "ui",
-            "constants.js",
-            "constants.d.ts",
-          ],
           exports: {
             "./categories/*": {
               import: "./categories/*/index.js",
@@ -41,10 +34,6 @@ const main = async () => {
             "./ui": {
               import: "./ui/index.js",
               types: "./ui/index.d.ts",
-            },
-            "./constants": {
-              import: "./constants.js",
-              types: "./constants.d.ts",
             },
           },
         },
