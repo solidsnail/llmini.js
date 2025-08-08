@@ -16,7 +16,7 @@ const main = async () => {
           version: packageJson.version,
           dependencies: {
             "@huggingface/transformers": "^3.7.1",
-            "kokoro-js": "^1.2.2",
+            "kokoro-js": "^1.2.1",
             outetts: "^0.2.0",
             wavefile: "^11.0.0",
             "lucide-react": "^0.534.0",
