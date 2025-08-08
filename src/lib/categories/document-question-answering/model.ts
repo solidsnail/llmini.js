@@ -7,44 +7,23 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
-export class DocumentQuestionAnsweringModel extends BaseModel {
-  private modelName: TypeModelName;
-  private generator: DocumentQuestionAnsweringPipeline | undefined;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
-      },
-    });
-  };
-
-  onResult = (result: string) => {
-    self.postMessage({
-      event: "onResult",
-      payload: {
-        result,
-      },
-    });
-  };
+export class DocumentQuestionAnsweringModel extends BaseModel<
+  TypeModelName,
+  string,
+  DocumentQuestionAnsweringPipeline
+> {
   ask = async (image: string, question: string) => {
-    if (!this.generator) {
+    if (!this.pipeline) {
       throw new Error("Generator is not loaded");
     }
     const modelConfig = CONFIG[this.modelName];
     switch (modelConfig.pretrained) {
       case "default-type": {
-        const output = await this.generator(image, question);
+        const output = await this.pipeline(image, question);
         const [{ answer }] = output as DocumentQuestionAnsweringOutput;
         this.onResult(answer);
         break;
@@ -55,7 +34,7 @@ export class DocumentQuestionAnsweringModel extends BaseModel {
     const modelConfig = CONFIG[this.modelName];
     switch (modelConfig.pretrained) {
       case "default-type": {
-        this.generator = (await pipeline<"document-question-answering">(
+        this.pipeline = (await pipeline<"document-question-answering">(
           "document-question-answering",
           modelConfig.name,
           {

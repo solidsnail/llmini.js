@@ -65,9 +65,6 @@ export const TextToSpeechComponent: FC<Props> = ({
         setError(err);
         setBusy(false);
       },
-      onDone() {
-        setBusy(false);
-      },
     });
 
     return () => {

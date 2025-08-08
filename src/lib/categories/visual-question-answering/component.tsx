@@ -6,7 +6,7 @@ import { type TypeModelName } from "./config";
 import { UI } from "../../ui";
 import { ICON_SIZE } from "../../constants";
 import type { TypeDevice } from "../../types";
-import type { TypeMessage } from "../chat/model";
+import { type TypeMessage } from "../chat/model";
 import SDK from "./sdk";
 
 type Props = {

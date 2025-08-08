@@ -1,59 +1,27 @@
 import {
-  PreTrainedTokenizer,
   Tensor,
   UltravoxModel,
   UltravoxProcessor,
   VoxtralProcessor,
   VoxtralForConditionalGeneration,
-  type PreTrainedModel,
   type Message,
+  Pipeline,
 } from "@huggingface/transformers";
 import * as wavefile from "wavefile";
 // import { env } from "@huggingface/transformers";
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
-export class AudioTextToTextModel extends BaseModel {
-  private modelName: TypeModelName;
-  private generator: UltravoxProcessor | undefined;
-  private model: PreTrainedModel | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
-      },
-    });
-  };
-
-  onResult = (result: string) => {
-    self.postMessage({
-      event: "onResult",
-      payload: {
-        result,
-      },
-    });
-  };
-
-  onError = (error: string) => {
-    self.postMessage({
-      event: "onError",
-      payload: {
-        error,
-      },
-    });
-  };
+export class AudioTextToTextModel extends BaseModel<
+  TypeModelName,
+  string,
+  Pipeline,
+  UltravoxProcessor
+> {
   transcribe = async (audioArrayBuffer: ArrayBuffer) => {
     if (!this.model) {
       throw new Error("Model is not loaded");
@@ -61,7 +29,7 @@ export class AudioTextToTextModel extends BaseModel {
     if (!this.tokenizer) {
       throw new Error("Tokenizer is not loaded");
     }
-    if (!this.generator) {
+    if (!this.processor) {
       throw new Error("Generator is not loaded");
     }
     try {
@@ -84,12 +52,12 @@ export class AudioTextToTextModel extends BaseModel {
           wav.toBitDepth("32f");
           wav.toSampleRate(16000);
           const audio = wav.getSamples();
-          const inputs = await this.generator(text, audio);
+          const inputs = await this.processor(text, audio);
           const generated_ids = await this.model.generate({
             ...inputs,
             max_new_tokens: 128,
           });
-          const generated_texts = this.generator.batch_decode(
+          const generated_texts = this.processor.batch_decode(
             (generated_ids as Tensor).slice(null, [
               inputs.input_ids.dims.at(-1),
               null,
@@ -122,12 +90,12 @@ export class AudioTextToTextModel extends BaseModel {
           wav.toBitDepth("32f");
           wav.toSampleRate(16000);
           const audio = wav.getSamples();
-          const inputs = await this.generator(text, audio);
+          const inputs = await this.processor(text, audio);
           const generated_ids = await this.model.generate({
             ...inputs,
             max_new_tokens: 128,
           });
-          const generated_texts = this.generator.batch_decode(
+          const generated_texts = this.processor.batch_decode(
             (generated_ids as Tensor).slice(null, [
               inputs.input_ids.dims.at(-1),
               null,
@@ -152,7 +120,7 @@ export class AudioTextToTextModel extends BaseModel {
     const modelConfig = CONFIG[this.modelName];
     switch (modelConfig.pretrained) {
       case "Ultravox": {
-        this.generator = await UltravoxProcessor.from_pretrained(
+        this.processor = await UltravoxProcessor.from_pretrained(
           modelConfig.name
         );
         this.model = await UltravoxModel.from_pretrained(modelConfig.name, {
@@ -162,11 +130,11 @@ export class AudioTextToTextModel extends BaseModel {
           progress_callback: this.onProgressChange,
           subfolder: modelConfig.subfolder,
         });
-        this.tokenizer = this.generator.tokenizer;
+        this.tokenizer = this.processor.tokenizer;
         break;
       }
       case "Voxtral": {
-        this.generator = await VoxtralProcessor.from_pretrained(
+        this.processor = await VoxtralProcessor.from_pretrained(
           modelConfig.name
         );
         this.model = await VoxtralForConditionalGeneration.from_pretrained(
@@ -179,7 +147,7 @@ export class AudioTextToTextModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         );
-        this.tokenizer = this.generator.tokenizer;
+        this.tokenizer = this.processor.tokenizer;
         break;
       }
     }

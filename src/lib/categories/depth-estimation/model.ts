@@ -1,9 +1,7 @@
 import {
-  Processor,
   AutoModelForDepthEstimation,
   AutoProcessor,
   RawImage,
-  type PreTrainedModel,
   type DepthEstimationPipelineOutput,
   pipeline,
   DepthEstimationPipeline,
@@ -12,57 +10,24 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
-export class DepthEstimationModel extends BaseModel {
-  private modelName: TypeModelName;
-  private processor: Processor | undefined;
-  private model: PreTrainedModel | undefined;
-  private generator: DepthEstimationPipeline | undefined;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
-      },
-    });
-  };
-
-  onResult = (result: string) => {
-    self.postMessage({
-      event: "onResult",
-      payload: {
-        result,
-      },
-    });
-  };
-
-  onError = (error: string) => {
-    self.postMessage({
-      event: "onError",
-      payload: {
-        error,
-      },
-    });
-  };
-
+export class DepthEstimationModel extends BaseModel<
+  TypeModelName,
+  string,
+  DepthEstimationPipeline
+> {
   estimate = async (imageBase64: string) => {
     try {
       const modelConfig = CONFIG[this.modelName];
       switch (modelConfig.pretrained) {
         case "pipeline": {
-          if (!this.generator) {
+          if (!this.pipeline) {
             throw new Error("Generator is not loaded");
           }
-          const output = (await this.generator(
+          const output = (await this.pipeline(
             imageBase64
           )) as DepthEstimationPipelineOutput;
           if (output.depth) {
@@ -114,7 +79,7 @@ export class DepthEstimationModel extends BaseModel {
     const modelConfig = CONFIG[this.modelName];
     switch (modelConfig.pretrained) {
       case "pipeline": {
-        this.generator = await pipeline<"depth-estimation">(
+        this.pipeline = await pipeline<"depth-estimation">(
           "depth-estimation",
           modelConfig.name,
           {

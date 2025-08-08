@@ -2,7 +2,6 @@ import {
   ImageProcessor,
   MobileViTFeatureExtractor,
   MobileViTForImageClassification,
-  type PreTrainedModel,
   pipeline,
   ImageClassificationPipeline,
   RawImage,
@@ -14,58 +13,26 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
-export class ImageClassificationModel extends BaseModel {
-  private modelName: TypeModelName;
-  private processor: ImageProcessor | undefined;
-  private model: PreTrainedModel | undefined;
-  private generator: ImageClassificationPipeline | undefined;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
-      },
-    });
-  };
-
-  onResult = (result: ImageClassificationOutput) => {
-    self.postMessage({
-      event: "onResult",
-      payload: {
-        result,
-      },
-    });
-  };
-
-  onError = (error: string) => {
-    self.postMessage({
-      event: "onError",
-      payload: {
-        error,
-      },
-    });
-  };
-
+export class ImageClassificationModel extends BaseModel<
+  TypeModelName,
+  ImageClassificationOutput,
+  ImageClassificationPipeline,
+  ImageProcessor
+> {
   classify = async (imageBase64: string) => {
     try {
       const modelConfig = CONFIG[this.modelName];
       switch (modelConfig.pretrained) {
         case "pipeline": {
-          if (!this.generator) {
+          if (!this.pipeline) {
             throw new Error("Generator is not loaded");
           }
           const image = await RawImage.read(imageBase64);
-          const output = (await this.generator(
+          const output = (await this.pipeline(
             image
           )) as ImageClassificationOutput;
           this.onResult(output);
@@ -110,7 +77,7 @@ export class ImageClassificationModel extends BaseModel {
     const modelConfig = CONFIG[this.modelName];
     switch (modelConfig.pretrained) {
       case "pipeline": {
-        this.generator = await pipeline<"image-classification">(
+        this.pipeline = await pipeline<"image-classification">(
           "image-classification",
           modelConfig.name,
           {

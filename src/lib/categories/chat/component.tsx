@@ -19,7 +19,6 @@ import SDK from "./sdk";
 
 type Props = {
   modelName?: TypeModelName;
-  system?: string;
   defaultPrompt?: string;
   defaultMessages?: TypeMessage[];
   maxTokens?: number;
@@ -35,9 +34,13 @@ type Props = {
 };
 export const ChatComponent: FC<Props> = ({
   modelName = "Phi-3.5-mini-instruct-onnx-web",
-  system = "You are a helpful assistant who responds only in English.",
   defaultPrompt = "",
-  defaultMessages = [],
+  defaultMessages = [
+    {
+      role: "system",
+      content: "You are a helpful assistant who responds only in English.",
+    },
+  ],
   maxTokens = 1024,
   withWorker = true,
   config = CONFIG,
@@ -74,7 +77,7 @@ export const ChatComponent: FC<Props> = ({
     try {
       setBusy(true);
       setPrompt("");
-      sdkRef.current?.sendMessage({
+      sdkRef.current?.prompt({
         prompt,
         settings: {
           characterTimeout,
@@ -93,28 +96,22 @@ export const ChatComponent: FC<Props> = ({
   };
   const loadModel = async () => {
     await sdkRef.current?.load();
+    sdkRef.current?.setMessages(messages);
     setLoaded(true);
   };
 
   useEffect(() => {
-    sdkRef.current = new SDK(modelName, {
-      withWorker,
-      device,
-      defaultMessages,
-      system,
-      callbacks: {
-        onProgressChange: setProgressInfo,
-        onError: (err) => {
-          setError(err);
-          setBusy(false);
-        },
-        onMessagesChange(messages) {
-          setMessages(messages);
-        },
-        onResult() {
-          setBusy(false);
-          setIsImageGen(false);
-        },
+    sdkRef.current = new SDK(modelName, withWorker, device, {
+      onProgressChange: setProgressInfo,
+      onResult() {
+        setBusy(false);
+      },
+      onError(error) {
+        setError(error);
+        setBusy(false);
+      },
+      onMessagesChange(messages) {
+        setMessages(messages);
       },
     });
 

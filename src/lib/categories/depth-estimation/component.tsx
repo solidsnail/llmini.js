@@ -43,7 +43,7 @@ export const DepthEstimationComponent: FC<Props> = ({
   useEffect(() => {
     sdkRef.current = new SDK(modelName, withWorker, device, {
       onProgressChange: setProgressInfo,
-      onResult(result) {
+      onResult(result: string) {
         setBusy(false);
         setResult(result);
       },

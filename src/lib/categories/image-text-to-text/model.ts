@@ -1,12 +1,9 @@
 import {
-  PreTrainedTokenizer,
   AutoModelForVision2Seq,
   AutoProcessor,
-  Processor,
   Florence2ForConditionalGeneration,
   AutoModelForImageTextToText,
   type Message,
-  type PreTrainedModel,
   RawImage,
   Tensor,
 } from "@huggingface/transformers";
@@ -14,47 +11,11 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
-export class ImageTextToTextModel extends BaseModel {
-  private modelName: TypeModelName;
-  private processor: Processor | undefined;
-  private model: PreTrainedModel | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
-      },
-    });
-  };
-
-  onResult = (result: string) => {
-    self.postMessage({
-      event: "onResult",
-      payload: {
-        result,
-      },
-    });
-  };
-
-  onError = (error: string) => {
-    self.postMessage({
-      event: "onError",
-      payload: {
-        error,
-      },
-    });
-  };
+export class ImageTextToTextModel extends BaseModel<TypeModelName, string> {
   ask = async (question: string, imageBase64: string) => {
     if (!this.model) {
       throw new Error("Model is not loaded");

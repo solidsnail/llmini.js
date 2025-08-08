@@ -55,9 +55,6 @@ export const AudioTextToTextComponent: FC<Props> = ({
         setError(err);
         setBusy(false);
       },
-      onDone() {
-        setBusy(false);
-      },
     });
 
     return () => {

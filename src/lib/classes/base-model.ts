@@ -1,4 +1,11 @@
-import { RawImage } from "@huggingface/transformers";
+import {
+  Pipeline,
+  PreTrainedModel,
+  PreTrainedTokenizer,
+  Processor,
+  RawImage,
+} from "@huggingface/transformers";
+import type { TypeDevice, TypeProgress } from "../types";
 
 declare global {
   interface Navigator {
@@ -8,7 +15,50 @@ declare global {
   }
 }
 
-export class BaseModel {
+export class BaseModel<
+  MODELNAME,
+  RESULT,
+  PIPELINE = Pipeline,
+  PROCESSOR = Processor,
+  TOKENIZER = PreTrainedTokenizer
+> {
+  modelName: MODELNAME;
+  processor: PROCESSOR | undefined;
+  pipeline: PIPELINE | undefined;
+  model: PreTrainedModel | undefined;
+  tokenizer: TOKENIZER | undefined;
+
+  constructor(modelName: MODELNAME) {
+    this.modelName = modelName;
+  }
+
+  onProgressChange = (progressInfo: TypeProgress) => {
+    self.postMessage({
+      event: "onProgressChange",
+      payload: {
+        progress: progressInfo,
+      },
+    });
+  };
+
+  onError = (error: string) => {
+    self.postMessage({
+      event: "onError",
+      payload: {
+        error,
+      },
+    });
+  };
+
+  onResult = (result: RESULT) => {
+    self.postMessage({
+      event: "onResult",
+      payload: {
+        result,
+      },
+    });
+  };
+
   async checkWebGpuSupport() {
     if (!navigator.gpu) {
       throw new Error(
@@ -33,4 +83,8 @@ export class BaseModel {
     const base64 = "data:image/png;base64," + dataUrl.split(",")[1];
     return base64;
   }
+
+  load = async (device?: TypeDevice) => {
+    console.log("Implement load method", device);
+  };
 }

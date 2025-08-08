@@ -1,4 +1,12 @@
 import { type ProgressInfo } from "@huggingface/transformers";
+import type { AudioTextToTextModel } from "./categories/audio-text-to-text/model";
+import type { ChatModel } from "./categories/chat/model";
+import type { TextToSpeechModel } from "./categories/text-to-speech/model";
+import type { DepthEstimationModel } from "./categories/depth-estimation/model";
+import type { DocumentQuestionAnsweringModel } from "./categories/document-question-answering/model";
+import type { ImageClassificationModel } from "./categories/image-classification/model";
+import type { ImageTextToTextModel } from "./categories/image-text-to-text/model";
+import type { ObjectDetectionModel } from "./categories/object-detection/model";
 
 export type TypeDTypeSingle =
   | "auto"
@@ -61,3 +69,12 @@ export type TypeConfig<N extends string, P extends string> = Record<
   }
 >;
 export type TypeProgress = ProgressInfo;
+export type TypeModel =
+  | AudioTextToTextModel
+  | ChatModel
+  | TextToSpeechModel
+  | DepthEstimationModel
+  | DocumentQuestionAnsweringModel
+  | ImageClassificationModel
+  | ImageTextToTextModel
+  | ObjectDetectionModel;

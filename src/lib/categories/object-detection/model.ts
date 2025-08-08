@@ -8,56 +8,25 @@ import {
 
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
-export class ObjectDetectionModel extends BaseModel {
-  private modelName: TypeModelName;
-  private generator: ObjectDetectionPipeline | undefined;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
-      },
-    });
-  };
-
-  onResult = (result: ObjectDetectionPipelineOutput) => {
-    self.postMessage({
-      event: "onResult",
-      payload: {
-        result,
-      },
-    });
-  };
-
-  onError = (error: string) => {
-    self.postMessage({
-      event: "onError",
-      payload: {
-        error,
-      },
-    });
-  };
-
+export class ObjectDetectionModel extends BaseModel<
+  TypeModelName,
+  ObjectDetectionPipelineOutput,
+  ObjectDetectionPipeline
+> {
   detect = async (imageBase64: string) => {
     try {
       const modelConfig = CONFIG[this.modelName];
       switch (modelConfig.pretrained) {
         case "pipeline": {
-          if (!this.generator) {
+          if (!this.pipeline) {
             throw new Error("Generator is not loaded");
           }
           const image = await RawImage.read(imageBase64);
-          const output = (await this.generator(
+          const output = (await this.pipeline(
             image
           )) as ObjectDetectionPipelineOutput;
           this.onResult(output);
@@ -72,7 +41,7 @@ export class ObjectDetectionModel extends BaseModel {
     const modelConfig = CONFIG[this.modelName];
     switch (modelConfig.pretrained) {
       case "pipeline": {
-        this.generator = await pipeline<"object-detection">(
+        this.pipeline = await pipeline<"object-detection">(
           "object-detection",
           modelConfig.name,
           {

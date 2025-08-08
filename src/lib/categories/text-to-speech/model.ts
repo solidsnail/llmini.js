@@ -2,7 +2,6 @@ import {
   pipeline,
   RawAudio,
   TextToAudioPipeline,
-  type PreTrainedModel,
 } from "@huggingface/transformers";
 import { WaveFile } from "wavefile";
 // import { env } from "@huggingface/transformers";
@@ -14,29 +13,16 @@ import {
   type TypeKokoroVoice,
   type TypeOutettsVoice,
 } from "./config";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 import type { KokoroTTS } from "kokoro-js";
 
 // env.backends.onnx.logLevel = "verbose";
 
-export class TextToSpeechModel extends BaseModel {
-  private modelName: TypeModelName;
-  private generator: KokoroTTS | TextToAudioPipeline | undefined;
-  private model: PreTrainedModel | undefined;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
-      },
-    });
-  };
+export class TextToSpeechModel extends BaseModel<
+  TypeModelName,
+  string,
+  KokoroTTS | TextToAudioPipeline
+> {
   uint8ToBase64 = (bytes: Uint8Array) => {
     const chunk = 0x8000;
     let binary = "",
@@ -60,14 +46,6 @@ export class TextToSpeechModel extends BaseModel {
     return `data:audio/wav;base64,${b64}`;
   };
 
-  onResult = (result: string) => {
-    self.postMessage({
-      event: "onResult",
-      payload: {
-        result,
-      },
-    });
-  };
   speak = async (
     text: string,
     voice: TypeKokoroVoice | TypeOutettsVoice = this.modelName ===
@@ -82,7 +60,7 @@ export class TextToSpeechModel extends BaseModel {
     const modelConfig = CONFIG[this.modelName];
     switch (modelConfig.pretrained) {
       case "Kokoro": {
-        const generator = this.generator as KokoroTTS;
+        const generator = this.pipeline as KokoroTTS;
         const result = await generator.generate(text, {
           voice: voice as TypeKokoroVoice,
           speed,
@@ -92,7 +70,7 @@ export class TextToSpeechModel extends BaseModel {
         break;
       }
       case "Outetts": {
-        const generator = this.generator!;
+        const generator = this.pipeline!;
         //@ts-expect-error No dts yer for outetts
         const speaker = generator.load_default_speaker(
           voice as TypeOutettsVoice
@@ -124,12 +102,12 @@ export class TextToSpeechModel extends BaseModel {
     switch (modelConfig.pretrained) {
       case "Kokoro": {
         const { KokoroTTS } = await import("kokoro-js");
-        this.generator = (await KokoroTTS.from_pretrained(modelConfig.name, {
+        this.pipeline = (await KokoroTTS.from_pretrained(modelConfig.name, {
           dtype: modelConfig.dtype as "q4",
           device: (device || modelConfig.device) as "webgpu",
           progress_callback: this.onProgressChange,
         })) as KokoroTTS;
-        this.model = this.generator.model;
+        this.model = this.pipeline.model;
         break;
       }
       case "Outetts": {
@@ -149,17 +127,17 @@ export class TextToSpeechModel extends BaseModel {
           dtype: modelConfig.dtype,
           device: device || modelConfig.device,
         });
-        this.generator = await InterfaceHF({
+        this.pipeline = await InterfaceHF({
           model_version: "0.2",
           cfg: model_config,
         });
-        // this.generator.print_default_speakers();
+        // this.pipeline.print_default_speakers();
         //@ts-expect-error No dts yer for outetts
-        this.model = this.generator.model.model;
+        this.model = this.pipeline.model.model;
         break;
       }
       case "default-type": {
-        this.generator = (await pipeline<"text-to-speech">(
+        this.pipeline = (await pipeline<"text-to-speech">(
           "text-to-speech",
           modelConfig.name,
           {
@@ -170,7 +148,7 @@ export class TextToSpeechModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         )) as TextToAudioPipeline;
-        this.model = this.generator.model;
+        this.model = this.pipeline.model;
         break;
       }
     }

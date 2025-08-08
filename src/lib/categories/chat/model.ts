@@ -1,15 +1,12 @@
 import {
   pipeline,
-  PreTrainedTokenizer,
   TextGenerationPipeline,
   TextStreamer,
   AutoProcessor,
   MultiModalityCausalLM,
   InterruptableStoppingCriteria,
   Tensor,
-  type Processor,
   type VLChatProcessor,
-  type PreTrainedModel,
   type Chat,
   type Message,
   type TextGenerationSingle,
@@ -20,7 +17,7 @@ import {
 import { BaseModel } from "../../classes/base-model";
 import { CONFIG, type TypeModelName } from "./config";
 import { ProgressStreamer } from "../../classes/progress-streamer";
-import type { TypeDevice, TypeProgress } from "../../types";
+import type { TypeDevice } from "../../types";
 
 // env.backends.onnx.logLevel = "verbose";
 
@@ -30,22 +27,15 @@ export type TypeMessage = Omit<Message, "role"> & {
 };
 
 type TypePromptProgressCallback = (args: { chunk: string }) => void;
-export class ChatModel extends BaseModel {
-  private modelName: TypeModelName;
-  private generator: TextGenerationPipeline | undefined;
-  private tokenizer: PreTrainedTokenizer | undefined;
+export class ChatModel extends BaseModel<
+  TypeModelName,
+  TypeMessage,
+  TextGenerationPipeline
+> {
   private _messages: TypeMessage[] = [];
   private isLoaded = false;
-  private processor: Processor | undefined;
-  private model: PreTrainedModel | undefined;
-  // Add these properties to manage character queuing
   private characterQueue: string[] = [];
   private isProcessingQueue = false;
-
-  constructor(modelName: TypeModelName) {
-    super();
-    this.modelName = modelName;
-  }
 
   get messages() {
     return this._messages;
@@ -64,7 +54,7 @@ export class ChatModel extends BaseModel {
     });
   }
 
-  setMessages = (messages: typeof this._messages) => {
+  setMessages = (messages: TypeMessage[]) => {
     this._messages = messages;
     this.onMessagesChange(this._messages);
   };
@@ -94,22 +84,6 @@ export class ChatModel extends BaseModel {
       event: "onMessagesChange",
       payload: {
         messages,
-      },
-    });
-  };
-
-  onResult = (lastReply: TypeMessage) => {
-    self.postMessage({
-      event: "onResult",
-      payload: lastReply,
-    });
-  };
-
-  onProgressChange = (progressInfo: TypeProgress) => {
-    self.postMessage({
-      event: "onProgressChange",
-      payload: {
-        progress: progressInfo,
       },
     });
   };
@@ -251,12 +225,12 @@ export class ChatModel extends BaseModel {
         break;
       }
       case "default-type": {
-        if (this.generator) {
-          // this.generator.tokenizer.apply_chat_template(this._messages, {
+        if (this.pipeline) {
+          // this.pipeline.tokenizer.apply_chat_template(this._messages, {
           //   tokenize: false,
           //   add_generation_prompt: true,
           // });
-          const outputs = await this.generator(this._messages, {
+          const outputs = await this.pipeline(this._messages, {
             max_new_tokens: args.maxTokens,
             // return_full_text: false,
             do_sample: args.do_sample,
@@ -308,7 +282,7 @@ export class ChatModel extends BaseModel {
         break;
       }
       case "default-type": {
-        this.generator = await pipeline<"text-generation">(
+        this.pipeline = await pipeline<"text-generation">(
           "text-generation",
           modelConfig.name,
           {
@@ -319,8 +293,8 @@ export class ChatModel extends BaseModel {
             subfolder: modelConfig.subfolder,
           }
         );
-        this.tokenizer = this.generator.tokenizer;
-        this.model = this.generator.model;
+        this.tokenizer = this.pipeline.tokenizer;
+        this.model = this.pipeline.model;
         this.isLoaded = true;
         break;
       }
