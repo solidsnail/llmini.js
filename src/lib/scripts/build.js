@@ -16,7 +16,7 @@ const main = async () => {
           version: packageJson.version,
           dependencies: {
             "@huggingface/transformers": "^3.7.1",
-            "kokoro-js": "^1.2.1",
+            "kokoro-js": "^1.2.2",
             outetts: "^0.2.0",
             wavefile: "^11.0.0",
             "lucide-react": "^0.534.0",
@@ -25,7 +25,7 @@ const main = async () => {
             "highlight.js": "^11.11.1",
             dompurify: "^3.2.6",
           },
-          files: ["categories", "themes", "ui"],
+          files: ["categories", "themes", "ui", "constants"],
           exports: {
             "./categories/*": {
               import: "./categories/*/index.js",
@@ -35,6 +35,10 @@ const main = async () => {
             "./ui": {
               import: "./ui/index.js",
               types: "./ui/index.d.ts",
+            },
+            "./constants": {
+              import: "./constants.js",
+              types: "./constants.d.ts",
             },
           },
         },
