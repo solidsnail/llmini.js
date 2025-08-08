@@ -101,6 +101,7 @@
   border: none;
   user-select: none;
   font-size: var(--fontsize);
+  font-family: var(--font-family);
   gap: var(--gap);
   border-radius: var(--radius);
   padding: var(--padding) calc(var(--padding) * 2);
@@ -150,7 +151,8 @@
 .ui-button[aria-checked="false"] {
 }
 .ui-button[aria-checked="true"] {
-  background: var(--colors-c);
+  background: var(--colors-g);
+  color: var(--colors-f);
 }
 
 .ui-input {
@@ -208,6 +210,7 @@ textarea.ui-input {
 
 .ui-flex {
   display: flex;
+  font-family: var(--font-family);
 }
 
 .ui-messages {
@@ -220,6 +223,16 @@ textarea.ui-input {
 
 .ui-message {
   font-family: var(--font-family);
+}
+.ui-message > div {
+  height: 100%;
+}
+.ui-message > div > pre {
+  height: 100%;
+  margin: 0px;
+}
+.ui-message > div > pre > code {
+  height: 100%;
 }
 .ui-message[data-role="user"] {
   align-self: flex-end;

@@ -102,7 +102,7 @@ export const TextToSpeechComponent: FC<Props> = ({
         required
         multiline
         radius="20px"
-        h="20px"
+        h="30px"
         flex={1}
         miw="100px"
         placeholder="Type your text to speak here"

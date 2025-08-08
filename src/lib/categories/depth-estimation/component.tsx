@@ -19,7 +19,7 @@ export const DepthEstimationComponent: FC<Props> = ({
   modelName = "depth-anything-small-hf",
   withWorker = true,
   device,
-  width,
+  width = "480px",
   height,
 }) => {
   const sdkRef = useRef<SDK>(undefined);

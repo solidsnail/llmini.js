@@ -22,7 +22,7 @@ export const ImageClassificationComponent: FC<Props> = ({
   modelName = "vit-base-nsfw-detector",
   withWorker = true,
   device,
-  width,
+  width = "400px",
   height,
 }) => {
   const sdkRef = useRef<SDK>(undefined);

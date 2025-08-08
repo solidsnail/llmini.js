@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useEffect, useRef, type FC } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
@@ -51,13 +51,37 @@ type Props = {
   message: TypeMessage;
 } & TypeCommonProps;
 const Component: FC<Props> = ({ message, ...props }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
   const highlight = (code: string) => {
     const raw = marked.parse(code) as string;
     return DOMPurify.sanitize(raw);
   };
 
+  const registerCopyButton = () => {
+    const onCopy = (event: MouseEvent) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const code = button.getAttribute("data-code");
+      if (code) {
+        navigator.clipboard.writeText(code);
+      }
+    };
+    if (ref.current) {
+      const copyButtons = Array.from(
+        ref.current.querySelectorAll(".hljs-copy-button")
+      ) as HTMLButtonElement[];
+      for (const copyButton of copyButtons) {
+        copyButton.removeEventListener("click", onCopy);
+        copyButton.addEventListener("click", onCopy);
+      }
+    }
+  };
+  useEffect(() => {
+    registerCopyButton();
+  }, [message]);
   return (
     <div
+      ref={ref}
       className="ui-message"
       data-role={message.role}
       style={getComponentStyle(props)}

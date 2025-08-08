@@ -89,7 +89,7 @@ export const ImageTextToTextComponent: FC<Props> = ({
         required
         multiline
         radius="20px"
-        h="20px"
+        h="30px"
         flex={1}
         miw="100px"
         placeholder="Type your prompt here"
@@ -117,7 +117,6 @@ export const ImageTextToTextComponent: FC<Props> = ({
         w="100%"
         bg="var(--colors-c)"
         c="var(--colors-f)"
-        
         p="10px"
         text={result ? result : busy ? "Analyzing image, please wait..." : ""}
         radius="0px 0px 20px 20px"

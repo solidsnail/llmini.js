@@ -69,26 +69,6 @@ export const ChatComponent: FC<Props> = ({
     }
   };
 
-  const registerCopyButtons = () => {
-    const formEl = formRef.current;
-    const onCopy = (event: MouseEvent) => {
-      const button = event.currentTarget as HTMLButtonElement;
-      const code = button.getAttribute("data-code");
-      if (code) {
-        navigator.clipboard.writeText(code);
-      }
-    };
-    if (formEl) {
-      const copyButtons = Array.from(
-        formEl.querySelectorAll(".hljs-copy-button")
-      ) as HTMLButtonElement[];
-      for (const copyButton of copyButtons) {
-        copyButton.removeEventListener("click", onCopy);
-        copyButton.addEventListener("click", onCopy);
-      }
-    }
-  };
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -115,10 +95,6 @@ export const ChatComponent: FC<Props> = ({
     await sdkRef.current?.load();
     setLoaded(true);
   };
-
-  useEffect(() => {
-    registerCopyButtons();
-  }, [messages]);
 
   useEffect(() => {
     sdkRef.current = new SDK(modelName, {
@@ -229,7 +205,6 @@ export const ChatComponent: FC<Props> = ({
       <UI.Text
         ta="center"
         text="AI can be wrong, always double check important info"
-        
         c="var(--colors-d)"
       />
     </form>

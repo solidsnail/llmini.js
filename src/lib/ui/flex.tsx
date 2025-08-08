@@ -3,7 +3,6 @@ import { getComponentStyle, type TypeCommonProps } from ".";
 
 type Props = PropsWithChildren<
   {
-    position?: "absolute" | "relative";
     direction?: "row" | "column";
     align?:
       | "flex-start"

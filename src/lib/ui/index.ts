@@ -27,9 +27,11 @@ export type TypeCommonProps = {
   radius?: CSSProperties["borderRadius"];
   border?: CSSProperties["border"];
   position?: CSSProperties["position"];
+  zIndex?: CSSProperties["zIndex"];
   fz?: CSSProperties["fontSize"];
   fw?: CSSProperties["fontWeight"];
   ta?: CSSProperties["textAlign"];
+  overflow?: CSSProperties["overflow"];
 };
 export const getComponentStyle = ({
   bg,
@@ -47,6 +49,8 @@ export const getComponentStyle = ({
   ta,
   fz,
   fw,
+  zIndex,
+  overflow,
 }: TypeCommonProps & Record<string, unknown>): CSSProperties => {
   return {
     flex,
@@ -64,5 +68,7 @@ export const getComponentStyle = ({
     textAlign: ta,
     fontSize: fz,
     fontWeight: fw,
+    zIndex,
+    overflow,
   };
 };

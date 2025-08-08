@@ -77,7 +77,6 @@ export const VisualQuestionAnsweringComponent: FC<Props> = ({
       h={height}
       wrap
     >
-      {" "}
       <UI.Text tagName="b" text={modelName} p="0px 10px" w="100%" />
       {error && <div className="ui-error">{error}</div>}
       <UI.ModelLoader
@@ -92,7 +91,7 @@ export const VisualQuestionAnsweringComponent: FC<Props> = ({
         required
         multiline
         radius="20px"
-        h="20px"
+        h="30px"
         flex={1}
         miw="100px"
         placeholder="Type your prompt here"
@@ -120,7 +119,6 @@ export const VisualQuestionAnsweringComponent: FC<Props> = ({
         w="100%"
         bg="var(--colors-c)"
         c="var(--colors-f)"
-        
         p="10px"
         text={text ? text : busy ? "Analyzing image, please wait..." : ""}
         radius="0px 0px 20px 20px"

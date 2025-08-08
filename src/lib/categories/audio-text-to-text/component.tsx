@@ -23,7 +23,7 @@ export const AudioTextToTextComponent: FC<Props> = ({
   withWorker = true,
   device,
   defaultAudio = "",
-  width,
+  width = "400px",
   height,
 }) => {
   const sdkRef = useRef<SDK>(undefined);
