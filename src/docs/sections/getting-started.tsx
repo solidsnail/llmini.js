@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import { UI } from "../../lib/ui";
-import { TextToSpeechComponent } from "../../lib/categories/text-to-speech";
+import { UI } from "llmini.js/ui";
+import { TextToSpeechComponent } from "llmini.js/categories/text-to-speech";
 
 export const SectionGettingStarted: FC = () => {
   return (

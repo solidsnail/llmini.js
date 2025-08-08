@@ -1,14 +1,14 @@
 import type { FC } from "react";
-import { UI } from "../../lib/ui";
-import { AudioTextToTextComponent } from "../../lib/categories/audio-text-to-text";
-import { ChatComponent } from "../../lib/categories/chat";
-import { DepthEstimationComponent } from "../../lib/categories/depth-estimation";
-import { DocumentQuestionAnsweringComponent } from "../../lib/categories/document-question-answering";
-import { ImageClassificationComponent } from "../../lib/categories/image-classification";
-import { ImageTextToTextComponent } from "../../lib/categories/image-text-to-text";
-import { ObjectDetectionComponent } from "../../lib/categories/object-detection";
-import { TextToSpeechComponent } from "../../lib/categories/text-to-speech";
-import { VisualQuestionAnsweringComponent } from "../../lib/categories/visual-question-answering";
+import { UI } from "llmini.js/ui";
+import { AudioTextToTextComponent } from "llmini.js/categories/audio-text-to-text";
+import { ChatComponent } from "llmini.js/categories/chat";
+import { DepthEstimationComponent } from "llmini.js/categories/depth-estimation";
+import { DocumentQuestionAnsweringComponent } from "llmini.js/categories/document-question-answering";
+import { ImageClassificationComponent } from "llmini.js/categories/image-classification";
+import { ImageTextToTextComponent } from "llmini.js/categories/image-text-to-text";
+import { ObjectDetectionComponent } from "llmini.js/categories/object-detection";
+import { TextToSpeechComponent } from "llmini.js/categories/text-to-speech";
+import { VisualQuestionAnsweringComponent } from "llmini.js/categories/visual-question-answering";
 
 export const SectionComponents: FC = () => {
   return (

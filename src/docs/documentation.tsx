@@ -1,7 +1,7 @@
 import "highlight.js/styles/github.css";
 
-import "../lib/themes/basic.css";
-import { UI } from "../lib/ui";
+import "llmini.js/themes/basic.css";
+import { UI } from "llmini.js/ui";
 import { useState } from "react";
 import { SectionComponents } from "./sections/components";
 import { SectionExamples } from "./sections/examples";

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { UI } from "../../lib/ui";
+import { UI } from "llmini.js/ui";
 
 export const SectionExamples: FC = () => {
   return (
